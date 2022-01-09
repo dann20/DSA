@@ -204,13 +204,15 @@ class RSA(object):
         return int2bytes(self.decrypt(msg), self.key.block_size)
 
     def sign_block(self, msg):
-        return int2bytes(self.sign(msg), self.key.block_size - 1)
+        # return int2bytes(self.sign(msg), self.key.block_size - 1)
+        return int2bytes(self.sign(msg), self.key.block_size)
 
     def verify_data(self, signature, digest):
-        bs = self.key.block_size - 1
+        bs = self.key.block_size
         signature_stream = (signature[i:i+bs] for i in range(0, len(signature), bs))
-        decrypted_digest = b''.join(self.decrypt_block(block) for block in signature_stream)
+        decrypted_digest = b''.join(self.decrypt_block(block)[:bs-1] for block in signature_stream).rstrip(b'\x00')
         if decrypted_digest == digest:
+            print('Decrypted digest: %s' % decrypted_digest)
             logging.info('Authentic message!')
         else:
             logging.info('Not authentic message!!!')
@@ -220,9 +222,9 @@ class RSA(object):
         if useCRT:
             logging.info('CRT optimize are used')
 
-        bs = self.key.block_size
+        bs = self.key.block_size - 1
         data_stream = (data[i:i+bs] for i in range(0, len(data), bs))
-        return b''.join(self.sign_block(block)[:bs-1] for block in data_stream).rstrip(b'\x00')
+        return b''.join(self.sign_block(block) for block in data_stream)
 
 def random_str(l):
     import os
