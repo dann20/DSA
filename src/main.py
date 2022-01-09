@@ -22,6 +22,9 @@ def get_args():
     parser.add_argument('-v', '--verify',
                         action='store_true',
                         help='performs verification, requires input file and public key')
+    parser.add_argument('-g', '--generate',
+                        action='store_true',
+                        help='generates new public-private key pair')
 
 def main():
     fmt = '[%(levelname)s] %(asctime)s - %(message)s'
@@ -42,4 +45,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
