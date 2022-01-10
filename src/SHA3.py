@@ -399,5 +399,5 @@ if __name__ == '__main__':
     for _ in range(300):
         x = x + random.choice(string.ascii_letters)
     print(f"testing for: {x}")
-    digest = sha3_512(x).hexdigest()
+    digest = sha3_512(x.encode('ascii')).hexdigest()
     print(f"Digest: {digest}")

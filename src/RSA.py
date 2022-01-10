@@ -33,8 +33,8 @@ class RSAKey(object):
                 return int(x, 10)
 
         with open(json_file, 'r') as f:
-            json_str = json.load(f)
-        d = { k: as_int(v) for k, v in json_str.items() }
+            key_dict = json.load(f)
+        d = { k: as_int(v) for k, v in key_dict.items() }
         return RSAKey(**d)
 
     def __init__(self, N=None, e=None, d=None, p=None, q=None, dp=None, dq=None, qinv=None, bits=None):
@@ -134,7 +134,7 @@ class RSAKey(object):
     def __repr__(self):
         return 'RSAKey(%s)' % ', '.join('%s=%s' % (k, hex_or_none(getattr(self, k, None))) for k in self.KEYS)
 
-    def as_dict(self, key_fields):
+    def as_dict(self, key_fields=KEYS):
         """
         dump key object (full | private | public) as dict object
         """
@@ -146,27 +146,24 @@ class RSAKey(object):
         """
         return json.dumps(self.as_dict(self.KEYS))
 
-    def to_json_file(self):
+    def to_json_file(self, filename='../keys/key.json'):
         """
         dump full key object to JSON file
         """
-        filename = '../keys/key.json'
         with open(filename, 'w') as f:
             json.dump(self.as_dict(self.KEYS), f, indent=4)
 
-    def public_to_json_file(self):
+    def public_to_json_file(self, filename='../keys/publickey.json'):
         """
         dump public key object to JSON file
         """
-        filename = '../keys/publickey.json'
         with open(filename, 'w') as f:
             json.dump(self.as_dict(self.PUBLIC_KEYS), f, indent=4)
 
-    def private_to_json_file(self):
+    def private_to_json_file(self, filename='../keys/privatekey.json'):
         """
         dump private key object to JSON file
         """
-        filename = '../keys/privatekey.json'
         with open(filename, 'w') as f:
             json.dump(self.as_dict(self.PRIVATE_KEYS), f, indent=4)
 

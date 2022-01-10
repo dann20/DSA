@@ -6,12 +6,14 @@ __all__ = [
     'ensure_bytes', 'ensure_str',
     'profile',
     'enhex', 'unhex',
-    'hex_or_none'
+    'hex_or_none',
+    'load_key_dict'
 ]
 
 import binascii
 import sys
 import time
+import json
 
 try: # python 2/3 compatability
     pyversion = 2
@@ -88,6 +90,20 @@ def hex_or_none(x):
         return '0x%x' % x
     else:
         return None
+
+def as_int(x):
+    if type(x) in IntTypes:
+        return x
+    elif type(x) is str and x.startswith('0x'):
+        return int(x, 16)
+    else:
+        return int(x, 10)
+
+def load_key_dict(json_file):
+    with open(json_file, 'r') as f:
+        key_dict = json.load(f)
+    d = { k: as_int(v) for k, v in key_dict.items() }
+    return d
 
 if __name__ == '__main__':
     print('[*] testing modinv')
