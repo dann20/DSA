@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>814</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="rsa_key_group">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>791</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>mononoki Nerd Font</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>RSA Key Configuration</string>
+    </property>
+    <widget class="QPushButton" name="generate_key">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>330</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Generate</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="load_key_btn">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>330</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Key</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="key_size">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>330</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>4096</number>
+     </property>
+     <property name="value">
+      <number>2048</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="key_size_lbl">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>330</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Key Size</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="key_size_lbl_2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>330</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>bits</string>
+     </property>
+    </widget>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>771</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>769</width>
+        <height>289</height>
+       </rect>
+      </property>
+      <widget class="QTextBrowser" name="key_info">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>771</width>
+         <height>291</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="save_key_btn">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>330</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save Key</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="key_type_combo">
+     <property name="geometry">
+      <rect>
+       <x>690</x>
+       <y>330</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Public</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Private</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Full</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="sha_group">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>791</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>mononoki Nerd Font</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>SHA3 Configuration</string>
+    </property>
+    <widget class="QComboBox" name="sha_ver_combo">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>20</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>SHA3-512</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SHA3-224</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SHA3-256</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SHA3-384</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="sha_lbl">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>20</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Choose SHA-3 variant</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="ds_group">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>460</y>
+      <width>791</width>
+      <height>331</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>mononoki Nerd Font</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Sign - Verify Data</string>
+    </property>
+    <widget class="QPushButton" name="discard_input_btn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>40</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Discard input</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="input_string_lbl">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>111</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Input string</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="input_string">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>30</y>
+       <width>431</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QScrollArea" name="scrollArea_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>771</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>769</width>
+        <height>159</height>
+       </rect>
+      </property>
+      <widget class="QTextBrowser" name="ds_info">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>771</width>
+         <height>161</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="load_file_btn">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>290</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load File</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="load_signature_btn">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>290</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Signature</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="sign_btn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>270</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sign</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="verify_btn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>270</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Verify</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="file_info">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>250</y>
+       <width>211</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="signature_info">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>250</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <zorder>scrollArea_2</zorder>
+    <zorder>discard_input_btn</zorder>
+    <zorder>input_string_lbl</zorder>
+    <zorder>input_string</zorder>
+    <zorder>load_file_btn</zorder>
+    <zorder>load_signature_btn</zorder>
+    <zorder>sign_btn</zorder>
+    <zorder>verify_btn</zorder>
+    <zorder>file_info</zorder>
+    <zorder>signature_info</zorder>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
