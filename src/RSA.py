@@ -7,6 +7,8 @@ from utils import *
 
 class RSAKey(object):
     KEYS = ['N', 'e', 'd', 'p', 'q', 'dp', 'dq', 'qinv']
+    PUBLIC_KEYS = ['N', 'e']
+    PRIVATE_KEYS = ['N', 'd', 'p', 'q', 'dp', 'dq', 'qinv']
 
     @staticmethod
     def from_json(json_str):
@@ -18,6 +20,21 @@ class RSAKey(object):
             else:
                 return int(x, 10)
         d = { k: as_int(v) for k, v in json.loads(json_str).items() }
+        return RSAKey(**d)
+
+    @staticmethod
+    def from_json_file(json_file):
+        def as_int(x):
+            if type(x) in IntTypes:
+                return x
+            elif type(x) is str and x.startswith('0x'):
+                return int(x, 16)
+            else:
+                return int(x, 10)
+
+        with open(json_file, 'r') as f:
+            json_str = json.load(f)
+        d = { k: as_int(v) for k, v in json_str.items() }
         return RSAKey(**d)
 
     def __init__(self, N=None, e=None, d=None, p=None, q=None, dp=None, dq=None, qinv=None, bits=None):
@@ -49,7 +66,7 @@ class RSAKey(object):
         else:
             self.phi = self.d = None
 
-        if self.phi:
+        if self.phi and self.e:
             assert self.e < self.phi
 
         if dp and dq:
@@ -117,17 +134,41 @@ class RSAKey(object):
     def __repr__(self):
         return 'RSAKey(%s)' % ', '.join('%s=%s' % (k, hex_or_none(getattr(self, k, None))) for k in self.KEYS)
 
-    def as_dict(self):
+    def as_dict(self, key_fields):
         """
-        dump this key object as dict object
+        dump key object (full | private | public) as dict object
         """
-        return { k: hex_or_none(getattr(self, k, None)) for k in self.KEYS }
+        return { k: hex_or_none(getattr(self, k, None)) for k in key_fields }
 
     def to_json(self):
         """
-        dump this key object as JSON
+        dump this key object as JSON object
         """
-        return json.dumps(self.as_dict())
+        return json.dumps(self.as_dict(self.KEYS))
+
+    def to_json_file(self):
+        """
+        dump full key object to JSON file
+        """
+        filename = '../keys/key.json'
+        with open(filename, 'w') as f:
+            json.dump(self.as_dict(self.KEYS), f, indent=4)
+
+    def public_to_json_file(self):
+        """
+        dump public key object to JSON file
+        """
+        filename = '../keys/publickey.json'
+        with open(filename, 'w') as f:
+            json.dump(self.as_dict(self.PUBLIC_KEYS), f, indent=4)
+
+    def private_to_json_file(self):
+        """
+        dump private key object to JSON file
+        """
+        filename = '../keys/privatekey.json'
+        with open(filename, 'w') as f:
+            json.dump(self.as_dict(self.PRIVATE_KEYS), f, indent=4)
 
     def dump(self):
         """
@@ -171,7 +212,7 @@ class RSA(object):
                 used to decrypt signature
         """
         if not self.key._can_encrypt:
-            raise AttributeError('This key object can not do encryption')
+            raise AttributeError('This key object can not do decryption in digital signature')
         if type(msg) not in IntTypes:
             msg = bytes2int(ensure_bytes(msg))
 
@@ -183,7 +224,7 @@ class RSA(object):
                 used to encrypt message digest to produce signature
         """
         if not self.key._can_decrypt:
-            raise AttributeError('This key object can not do decryption')
+            raise AttributeError('This key object can not do encryption in digital signature')
         if type(msg) not in IntTypes:
             msg = bytes2int(ensure_bytes(msg))
 
