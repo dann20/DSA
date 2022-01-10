@@ -252,8 +252,10 @@ class RSA(object):
         if decrypted_digest == digest:
             print('Decrypted digest: %s' % decrypted_digest)
             logging.info('Authentic message!')
+            return True
         else:
             logging.info('Not authentic message!!!')
+            return False
 
     def sign_data(self, data):
         useCRT = self.key._can_crt
