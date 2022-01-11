@@ -250,7 +250,7 @@ class RSA(object):
         signature_stream = (signature[i:i+bs] for i in range(0, len(signature), bs))
         decrypted_digest = b''.join(self.decrypt_block(block)[:bs-1] for block in signature_stream).rstrip(b'\x00')
         if decrypted_digest == digest:
-            print('Decrypted digest: %s' % decrypted_digest)
+            logging.info('Decrypted digest: %s' % decrypted_digest)
             logging.info('Authentic message!')
             return True
         else:

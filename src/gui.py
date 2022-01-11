@@ -27,10 +27,12 @@ class DSA:
         self.set_sha(sha)
         self.KEYS = ['N', 'e', 'd', 'p', 'q', 'dp', 'dq', 'qinv']
 
-        # key = RSAKey(bits=int(self.config['key_size']), e=int(self.config['e']))
-        # logging.info('Default key generated (2048 bits)')
-        # self.set_key(key)
-        # self.last = None
+        self.file_data = None
+        self.input_string = None
+        self.signature = None
+        self.signature_filename = None
+        self.key = None
+        self.rsa = None
 
     def set_sha(self, sha):
         self.sha = sha
@@ -197,7 +199,7 @@ class Ui_MainWindow(object):
         self.save_key_btn.setGeometry(QtCore.QRect(530, 330, 111, 31))
         self.save_key_btn.setObjectName("save_key_btn")
         self.key_type_combo = QtWidgets.QComboBox(self.rsa_key_group)
-        self.key_type_combo.setGeometry(QtCore.QRect(350, 330, 81, 31))
+        self.key_type_combo.setGeometry(QtCore.QRect(350, 330, 95, 31))
         self.key_type_combo.setObjectName("key_type_combo")
         self.key_type_combo.addItem("")
         self.key_type_combo.addItem("")
@@ -316,7 +318,7 @@ class Ui_MainWindow(object):
         self.load_key_btn.clicked.connect(self.load_key)
         self.save_key_btn.clicked.connect(self.save_key)
         self.generate_key.clicked.connect(self.keygen)
-        self.sha_ver_combo.editTextChanged.connect(self.change_sha)
+        self.sha_ver_combo.currentTextChanged.connect(self.change_sha)
         self.submit_string_btn.clicked.connect(self.submit_string)
         self.discard_input_btn.clicked.connect(self.discard_data)
         self.input_file_btn.clicked.connect(self.load_file)
@@ -383,7 +385,7 @@ class Ui_MainWindow(object):
                 self.dsa.config['key_state'] = 'public'
                 key = RSAKey(**key_dict)
             else:
-                self.show_popup('Public key does not contain e or N.')
+                self.show_popup('Public key does not contain both e and N.')
                 return False
 
         elif key_type == 'Private':
@@ -391,7 +393,7 @@ class Ui_MainWindow(object):
                 self.dsa.config['key_state'] = 'private'
                 key = RSAKey(**key_dict)
             else:
-                self.show_popup('Private key does not contain d or N.')
+                self.show_popup('Private key does not contain both d and N.')
                 return False
 
         elif key_type == 'Full':
@@ -399,7 +401,7 @@ class Ui_MainWindow(object):
                 self.dsa.config['key_state'] = 'full'
                 key = RSAKey(**key_dict)
             else:
-                self.show_popup('Key does not contain d or e or N.')
+                self.show_popup('Key does not contain enough values d, e and N.')
                 return False
 
         self.dsa.set_key(key)
@@ -408,9 +410,9 @@ class Ui_MainWindow(object):
     def keygen(self):
         bits = self.key_size.value()
         e = self.e_value.toPlainText()
-        logging.info(bits)
+        logging.info(f'bits = {bits}')
         logging.info(type(bits))
-        logging.info(e)
+        logging.info(f'e = {e}')
         logging.info(type(e))
         try:
             self.dsa.keygen(bits, e)
@@ -455,6 +457,7 @@ class Ui_MainWindow(object):
 
     def change_sha(self):
         new_sha_ver = self.sha_ver_combo.currentText()
+        logging.info(f'Change to variant {new_sha_ver}')
         new_sha = SHA_VER[new_sha_ver]
         self.dsa.set_sha(new_sha)
 
@@ -470,6 +473,7 @@ class Ui_MainWindow(object):
         self.dsa.file_data = filename
         self.dsa.input_string = None
         self.input_string.setText('')
+        logging.info(f'Chosen input file {filename}')
 
     def load_signature(self):
         file_filter = 'Signature Files (*.sig)'
@@ -484,6 +488,7 @@ class Ui_MainWindow(object):
         try:
             with open(filename, 'rb') as f:
                 self.dsa.signature = f.read()
+            logging.info(f'Loaded signature file {filename}')
         except:
             self.show_popup('Error when opening signature file.')
 
@@ -491,6 +496,7 @@ class Ui_MainWindow(object):
         self.dsa.input_string = self.input_string.toPlainText()
         self.dsa.file_data = None
         self.file_info.setText('')
+        logging.info(f'Submitted message: {self.dsa.input_string}')
 
     def discard_data(self):
         self.dsa.input_string = None
@@ -500,13 +506,16 @@ class Ui_MainWindow(object):
         self.signature_info.setText('')
         self.file_info.setText('')
         self.input_string.setText('')
+        logging.info('Discarded all inputs.')
 
     def sign(self):
+        logging.info('Signing message...')
         log = self.dsa.sign()
         self.dsa_info.append('\n\n')
         self.dsa_info.append(log)
 
     def verify(self):
+        logging.info('Verifying message...')
         log = self.dsa.verify()
         self.dsa_info.append('\n\n')
         self.dsa_info.append(log)
