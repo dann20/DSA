@@ -72,6 +72,7 @@
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
        <pointsize>12</pointsize>
       </font>
      </property>
@@ -90,6 +91,7 @@
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
        <pointsize>12</pointsize>
       </font>
      </property>
@@ -168,11 +170,6 @@
        <string>Private</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>Full</string>
-      </property>
-     </item>
     </widget>
     <widget class="QLabel" name="key_size_lbl_4">
      <property name="geometry">
@@ -185,6 +182,7 @@
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
        <pointsize>12</pointsize>
       </font>
      </property>
@@ -257,7 +255,7 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <property name="text">
-       <string>SHA3-224</string>
+       <string>SHA3-384</string>
       </property>
      </item>
      <item>
@@ -267,7 +265,7 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <property name="text">
-       <string>SHA3-384</string>
+       <string>SHA3-224</string>
       </property>
      </item>
     </widget>
@@ -282,6 +280,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
        <pointsize>12</pointsize>
       </font>
      </property>
@@ -336,6 +335,7 @@ Inputs</string>
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
        <pointsize>12</pointsize>
        <italic>true</italic>
        <underline>false</underline>
@@ -431,6 +431,8 @@ Inputs</string>
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
+       <pointsize>12</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -453,6 +455,8 @@ Inputs</string>
      </property>
      <property name="font">
       <font>
+       <family>mononoki Nerd Font</family>
+       <pointsize>12</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>

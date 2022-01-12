@@ -104,6 +104,11 @@ class InteractiveShell(cmd.Cmd):
         keep file empty to read data from stdin
         """
 
+        if self.config['key_state'] == 'public':
+            print('FAILED: Signing requires private key!')
+            print('Current key state is public.')
+            return
+
         sha = self.sha()
 
         if not file:
@@ -197,7 +202,7 @@ class InteractiveShell(cmd.Cmd):
         try:
             key = RSAKey(bits=bits, e=int(self.config['e']))
             self.set_key(key)
-            self.config['key_state'] = 'full'
+            self.config['key_state'] = 'private'
         except ValueError:
             print('Can not generate key')
         except KeyboardInterrupt:
@@ -257,7 +262,7 @@ class InteractiveShell(cmd.Cmd):
     def complete_loadkey(self, *args):
         return self.complete_filename(*args)
 
-    def do_loadfullkey(self, file):
+    def do_loadkey(self, file):
         """
         loadfullkey [fullkey_file]
 
@@ -281,41 +286,47 @@ class InteractiveShell(cmd.Cmd):
             return
 
         self.set_key(key)
-        self.config['key_state'] = 'full'
+        self.config['key_state'] = 'private'
         print('Key loaded')
 
-    def do_loadkey(self, files):
-        """
-        loadkey [privatekey_file] [publickey_file]
+    def complete_loadprivatekey(self, *args):
+        return self.complete_filename(*args)
 
-        read key from file or read JSON-format key from stdin
+    def do_loadprivatekey(self, file):
         """
+        loadkey [privatekey_file]
 
-        private, public = files.split(' ')
+        read key from file
+        """
 
         try:
-            if private and public:
-                private_key_dict = load_key_dict(private)
-                public_key_dict = load_key_dict(public)
-                key_dict = private_key_dict | public_key_dict
-                key = RSAKey(**key_dict)
-                self.set_key(key)
-                self.config['key_state'] = 'full'
-                print('Key loaded')
-            elif private:
-                private_key_dict = load_key_dict(private)
-                private_key = RSAKey(**private_key_dict)
-                self.set_key(private_key)
-                self.config['key_state'] = 'private'
-                print('Private Key loaded')
-            elif public:
-                public_key_dict = load_key_dict(public)
-                public_key = RSAKey(**public_key_dict)
-                self.set_key(public_key)
-                self.config['key_state'] = 'public'
-                print('Public Key loaded')
+            private_key_dict = load_key_dict(file)
+            private_key = RSAKey(**private_key_dict)
+            self.set_key(private_key)
+            self.config['key_state'] = 'private'
+            print('Private Key loaded')
         except:
-            print('Cannot load or load key.')
+            print('Cannot load or load private key.')
+            return
+
+    def complete_loadpublickey(self, *args):
+        return self.complete_filename(*args)
+
+    def do_loadpublickey(self, file):
+        """
+        loadkey [publickey_file]
+
+        read key from file
+        """
+
+        try:
+            public_key_dict = load_key_dict(file)
+            public_key = RSAKey(**public_key_dict)
+            self.set_key(public_key)
+            self.config['key_state'] = 'public'
+            print('Public Key loaded')
+        except:
+            print('Cannot load or load public key.')
             return
 
     def complete_filename(self, text, line, begidx, endidx):
@@ -349,9 +360,7 @@ class InteractiveShell(cmd.Cmd):
 
         if file:
             try:
-                if self.config['key_state'] == 'full':
-                    self.key.to_json_file(file)
-                elif self.config['key_state'] == 'private':
+                if self.config['key_state'] == 'private':
                     self.key.private_to_json_file(file)
                 elif self.config['key_state'] == 'public':
                     self.key.public_to_json_file(file)

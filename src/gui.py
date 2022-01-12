@@ -1,4 +1,3 @@
-from json import load
 import os
 import logging
 import textwrap
@@ -56,13 +55,10 @@ class DSA:
                 headline = '\n' + ' ' * indent + '%4s = ' % attrname
                 return '\n'.join(p + i for p, i in zip(pref_generator(headline), textwrap.wrap('0x%x,' % val)))
 
-        # log = 'RSAKey {\n'
         log = ''
         for attr in self.KEYS:
             log += dump_attr(attr)
         log += '\n'
-        # log += '}\n'
-        # logging.info(log)
         return log
 
     def keygen(self, bits, e):
@@ -72,7 +68,7 @@ class DSA:
             e = self.config['e']
         key = RSAKey(bits=int(bits), e=int(e))
         self.set_key(key)
-        self.config['key_state'] = 'full'
+        self.config['key_state'] = 'private'
 
     def sign(self):
         sha = self.sha()
@@ -89,7 +85,8 @@ class DSA:
                     for byte_block in iter(lambda: f.read(4096), b""):
                         sha.update(byte_block)
                 file_data, input_string = self.file_data, None
-            except:
+            except Exception as ex:
+                logging.error(ex)
                 logging.error('Can not open file %r' % self.file_data)
                 return False
 
@@ -127,7 +124,8 @@ class DSA:
                     # Read and update hash string value in blocks of 4K
                     for byte_block in iter(lambda: f.read(4096), b""):
                         sha.update(byte_block)
-            except:
+            except Exception as ex:
+                logging.error(ex)
                 logging.error('Can not open file %r' % self.file_data)
                 return False
 
@@ -201,7 +199,6 @@ class Ui_MainWindow(object):
         self.key_type_combo = QtWidgets.QComboBox(self.rsa_key_group)
         self.key_type_combo.setGeometry(QtCore.QRect(350, 330, 95, 31))
         self.key_type_combo.setObjectName("key_type_combo")
-        self.key_type_combo.addItem("")
         self.key_type_combo.addItem("")
         self.key_type_combo.addItem("")
         self.key_size_lbl_4 = QtWidgets.QLabel(self.rsa_key_group)
@@ -339,7 +336,6 @@ class Ui_MainWindow(object):
         self.save_key_btn.setText(_translate("DSA using SHA3-RSA", "Save Key"))
         self.key_type_combo.setItemText(0, _translate("DSA using SHA3-RSA", "Public"))
         self.key_type_combo.setItemText(1, _translate("DSA using SHA3-RSA", "Private"))
-        self.key_type_combo.setItemText(2, _translate("DSA using SHA3-RSA", "Full"))
         self.key_size_lbl_4.setText(_translate("DSA using SHA3-RSA", "e ="))
         self.e_value.setHtml(_translate("DSA using SHA3-RSA", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -349,9 +345,9 @@ class Ui_MainWindow(object):
         self.generate_key.setText(_translate("DSA using SHA3-RSA", "Generate"))
         self.sha_group.setTitle(_translate("DSA using SHA3-RSA", "SHA3 Configuration"))
         self.sha_ver_combo.setItemText(0, _translate("DSA using SHA3-RSA", "SHA3-512"))
-        self.sha_ver_combo.setItemText(1, _translate("DSA using SHA3-RSA", "SHA3-224"))
+        self.sha_ver_combo.setItemText(1, _translate("DSA using SHA3-RSA", "SHA3-384"))
         self.sha_ver_combo.setItemText(2, _translate("DSA using SHA3-RSA", "SHA3-256"))
-        self.sha_ver_combo.setItemText(3, _translate("DSA using SHA3-RSA", "SHA3-384"))
+        self.sha_ver_combo.setItemText(3, _translate("DSA using SHA3-RSA", "SHA3-224"))
         self.sha_lbl.setText(_translate("DSA using SHA3-RSA", "Choose SHA-3 variant"))
         self.ds_group.setTitle(_translate("DSA using SHA3-RSA", "Sign - Verify Data"))
         self.discard_input_btn.setText(_translate("DSA using SHA3-RSA", "Discard\n"
@@ -378,14 +374,17 @@ class Ui_MainWindow(object):
             return False
         try:
             key_dict = load_key_dict(filename)
-        except:
-            self.show_popup('Cannot open key file.')
+        except Exception as ex:
+            logging.error(ex)
+            self.show_popup('Cannot open key file.', QMessageBox.Critical)
         if key_type == 'Public':
             if key_dict.get('e') and key_dict.get('N'):
                 self.dsa.config['key_state'] = 'public'
                 key = RSAKey(**key_dict)
+                if key_dict.get('d'):
+                    self.show_popup('WARNING: This key seems to contain private values.', QMessageBox.Warning)
             else:
-                self.show_popup('Public key does not contain both e and N.')
+                self.show_popup('Public key does not contain both e and N.', QMessageBox.Critical)
                 return False
 
         elif key_type == 'Private':
@@ -393,15 +392,7 @@ class Ui_MainWindow(object):
                 self.dsa.config['key_state'] = 'private'
                 key = RSAKey(**key_dict)
             else:
-                self.show_popup('Private key does not contain both d and N.')
-                return False
-
-        elif key_type == 'Full':
-            if key_dict.get('d') and key_dict.get('N') and key_dict.get('e'):
-                self.dsa.config['key_state'] = 'full'
-                key = RSAKey(**key_dict)
-            else:
-                self.show_popup('Key does not contain enough values d, e and N.')
+                self.show_popup('Private key does not contain enough values e, d and N.', QMessageBox.Critical)
                 return False
 
         self.dsa.set_key(key)
@@ -410,25 +401,22 @@ class Ui_MainWindow(object):
     def keygen(self):
         bits = self.key_size.value()
         e = self.e_value.toPlainText()
-        logging.info(f'bits = {bits}')
-        logging.info(type(bits))
-        logging.info(f'e = {e}')
-        logging.info(type(e))
+        logging.info(f'bits = {bits} . Type {type(bits)}')
+        logging.info(f'e = {e} . Type {type(e)}')
         try:
             self.dsa.keygen(bits, e)
-            try:
-                print(self.dsa.log_key())
-            except Exception as ex:
-                logging.error(ex)
+            print(self.dsa.log_key())
             self.key_info.setText(self.dsa.log_key())
-        except:
-            self.show_popup('Cannot generate new key pair')
+        except Exception as ex:
+            logging.error(ex)
+            self.key_info.setText('Generating key pair failed.\n')
+            self.show_popup('Cannot generate new key pair', QMessageBox.Critical)
 
-    def show_popup(self, text):
+    def show_popup(self, text, icon=QMessageBox.Question):
         msg = QMessageBox()
         msg.setWindowTitle('DSA')
         msg.setText(text)
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(icon)
         msg.setStandardButtons(QMessageBox.Ok)
         _ = msg.exec_()
 
@@ -442,16 +430,14 @@ class Ui_MainWindow(object):
             initialFilter='Key JSON File (*.json)'
         )
         if filename:
+            filename = filename.rstrip('.json')
             try:
-                if self.dsa.config['key_state'] == 'full':
-                    self.dsa.key.to_json_file(filename)
-                elif self.dsa.config['key_state'] == 'private':
-                    self.dsa.key.private_to_json_file(filename)
-                elif self.dsa.config['key_state'] == 'public':
-                    self.dsa.key.public_to_json_file(filename)
-                self.show_popup('Dumped key to file %s' % filename)
-            except:
-                self.show_popup('Can not dump key to file')
+                self.dsa.key.private_to_json_file(f'{filename}.json')
+                self.dsa.key.public_to_json_file(f'{filename}-public.json')
+                self.show_popup(f'Dumped key to file {filename}.json and {filename}-public.json', QMessageBox.Information)
+            except Exception as ex:
+                logging.error(ex)
+                self.show_popup('Cannot dump key to file', QMessageBox.Critical)
         else:
             self.show_popup('No file specified.')
 
@@ -489,8 +475,9 @@ class Ui_MainWindow(object):
             with open(filename, 'rb') as f:
                 self.dsa.signature = f.read()
             logging.info(f'Loaded signature file {filename}')
-        except:
-            self.show_popup('Error when opening signature file.')
+        except Exception as ex:
+            logging.error(ex)
+            self.show_popup('Error when opening signature file.', QMessageBox.Critical)
 
     def submit_string(self):
         self.dsa.input_string = self.input_string.toPlainText()
@@ -509,14 +496,27 @@ class Ui_MainWindow(object):
         logging.info('Discarded all inputs.')
 
     def sign(self):
+        if self.dsa.config['key_state'] == 'public':
+            logging.warning('Signing requires private key!')
+            self.dsa_info.append('\n\nSigning requires private key!\n\n')
+            return
+
         logging.info('Signing message...')
-        log = self.dsa.sign()
+        try:
+            log = self.dsa.sign()
+        except Exception as ex:
+            log = 'Signing failed.'
+            logging.error(ex)
         self.dsa_info.append('\n\n')
         self.dsa_info.append(log)
 
     def verify(self):
         logging.info('Verifying message...')
-        log = self.dsa.verify()
+        try:
+            log = self.dsa.verify()
+        except Exception as ex:
+            log = 'Verification failed.'
+            logging.error(ex)
         self.dsa_info.append('\n\n')
         self.dsa_info.append(log)
 

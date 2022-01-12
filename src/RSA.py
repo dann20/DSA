@@ -146,12 +146,12 @@ class RSAKey(object):
         """
         return json.dumps(self.as_dict(self.KEYS))
 
-    def to_json_file(self, filename='../keys/key.json'):
-        """
-        dump full key object to JSON file
-        """
-        with open(filename, 'w') as f:
-            json.dump(self.as_dict(self.KEYS), f, indent=4)
+    # def to_json_file(self, filename='../keys/key.json'):
+    #     """
+    #     dump full key object to JSON file
+    #     """
+    #     with open(filename, 'w') as f:
+    #         json.dump(self.as_dict(self.KEYS), f, indent=4)
 
     def public_to_json_file(self, filename='../keys/publickey.json'):
         """
@@ -165,7 +165,7 @@ class RSAKey(object):
         dump private key object to JSON file
         """
         with open(filename, 'w') as f:
-            json.dump(self.as_dict(self.PRIVATE_KEYS), f, indent=4)
+            json.dump(self.as_dict(self.KEYS), f, indent=4)
 
     def dump(self):
         """
