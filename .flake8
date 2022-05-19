@@ -1,2 +1,4 @@
 [flake8]
-ignore = E501
+# E501: warning long lines
+# F403, F405: star import related
+ignore = E501, F403, F405
